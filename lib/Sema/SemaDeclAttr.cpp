@@ -4743,6 +4743,29 @@ static void handleSwiftName(Sema &S, Decl *D, const AttributeList &Attr) {
                            Attr.getAttributeSpellingListIndex()));
 }
 
+static void handleSwiftDefault(Sema &S, Decl *D, const AttributeList &Attr) {
+  if (!Attr.isArgIdent(0)) {
+    S.Diag(Attr.getLoc(), diag::err_attribute_argument_n_type)
+      << Attr.getName() << 1 << AANT_ArgumentIdentifier;
+    return;
+  }
+
+  IdentifierLoc *IL = Attr.getArgAsIdent(0);
+  SwiftDefaultAttr::Kind kind;
+  if (!SwiftDefaultAttr::ConvertStrToKind(IL->Ident->getName(), kind)) {
+    kind = SwiftDefaultAttr::Kind::Nil;
+    /*
+    S.Diag(IL->Loc, diag::warn_attribute_type_not_supported) << Attr.getName()
+      << IL->Ident;
+    return;
+    */
+  }
+
+  D->addAttr(::new (S.Context)
+             SwiftDefaultAttr(Attr.getRange(), S.Context, kind,
+                            Attr.getAttributeSpellingListIndex()));
+}
+
 static bool isErrorParameter(Sema &S, QualType paramType) {
   if (auto ptr = paramType->getAs<PointerType>()) {
     auto outerPointee = ptr->getPointeeType();
@@ -6110,6 +6133,9 @@ static void ProcessDeclAttribute(Sema &S, Scope *scope, Decl *D,
     break;
   case AttributeList::AT_SwiftName:
     handleSwiftName(S, D, Attr);
+    break;
+  case AttributeList::AT_SwiftDefault:
+    handleSwiftDefault(S, D, Attr);
     break;
   case AttributeList::AT_SwiftError:
     handleSwiftError(S, D, Attr);

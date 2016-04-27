@@ -1347,6 +1347,18 @@ def SwiftName : InheritableAttr {
   let Documentation = [Undocumented];
 }
 
+def SwiftDefault : InheritableAttr {
+  let Spellings = [GCC<"swift_default">];
+  //let Args = [ExprArgument<"Expr">];
+  let Args = [EnumArgument<"Kind", "Kind",
+               ["nil", "[]", "[:]"],
+               ["Nil", "EmptyArray", "EmptyDictionary"]>];
+  let LateParsed = 1;
+  let ParseArgumentsAsUnevaluated = 1;
+  let Subjects = SubjectList<[ParmVar]>;
+  let Documentation = [Undocumented];
+}
+
 def SwiftNewtype : Attr {
   let Spellings = [GNU<"swift_newtype">, GNU<"swift_wrapper">];
   let Subjects = SubjectList<[TypedefName], ErrorDiag, "ExpectedType">;

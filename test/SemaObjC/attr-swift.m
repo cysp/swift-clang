@@ -127,6 +127,12 @@ Point3D badGetter2(Point3D point) __attribute__((swift_name("getter:bad2(_:))"))
 
 void badSetter2(Point3D point) __attribute__((swift_name("setter:bad2(self:))"))); // expected-error{{parameter of 'swift_name' attribute must be a Swift function name string}}
 
+// --- swift_default ---
+
+@interface SDFoo
+- (void)doThingWithThing:(id __attribute__((swift_default(nil))))thing;
+@end
+
 // --- swift_error ---
 
 @class NSError;
